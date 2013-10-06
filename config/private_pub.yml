@@ -1,0 +1,10 @@
+development:
+  server: "http://50.112.243.144:9292/faye"
+  secret_token: "secret"
+test:
+  server: "http://50.112.243.144:9292/faye"
+  secret_token: "secret"
+production:
+  server: "http://50.112.243.144:9292/faye"
+  secret_token: "a667cfcf5dc44a59da02c1a67fc1f78f86fafabe21f2d093d31f26d8ec02a04c"
+  signature_expiration: 3600 # one hour

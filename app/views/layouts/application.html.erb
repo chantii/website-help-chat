@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<title>Live Chat</title>
+		<%= stylesheet_link_tag    "application", :media => "all" %>
+		<%= javascript_include_tag "application" %>
+		<%= javascript_include_tag "private_pub" %>
+		<%= csrf_meta_tags %>
+		<%= yield(:head) %>
+		<script>
+		
+function setCookie(c_name,value,exdays)
+  {
+     var exdate=new Date();
+     exdate.setDate(exdate.getDate() + exdays);
+     var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+     document.cookie=c_name + "=" + c_value;
+   //  alert("Cookie set");
+  }
+
+function getCookie(c_name)
+{
+var i,x,y,ARRcookies=document.cookie.split(";");
+for (i=0;i<ARRcookies.length;i++)
+{
+  x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+  y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+  x=x.replace(/^\s+|\s+$/g,"");
+  if (x==c_name)
+    {
+    return unescape(y);
+    }
+}
+}
+
+function checkCookie(c_name,value,exdays)
+{
+  var livechatcookie=getCookie(c_name);
+  var oldValue = "";
+  if (livechatcookie!=null && livechatcookie!="")
+  {
+        oldValue = livechatcookie;
+  }
+        value = oldValue + "`" + value;
+     //   alert(value);
+        setCookie(c_name,value,365);
+}
+
+function checkCookieChatID(chat_id)
+{
+var chatid=getCookie("chat_id");
+  if (chatid!=null && chatid!="")
+  {
+	return chatid;
+  }
+else 
+  {
+    setCookie("chat_id",chat_id,365);
+    return chat_id;
+  }
+}		
+
+$(function() {
+
+	PrivatePub.subscribe("/messages/private/<%= params[:subdomain] %>/broadcast", function(data) {	
+		$('<p></p>').html(data.username + ": " + data.msg).appendTo('#chat_room');
+		checkCookie("livechat", data.username + ":"  + data.msg ,10);
+		var height = $('#chat_room')[0].scrollHeight;
+		$('#chat_room').scrollTop(height);
+	});
+
+	PrivatePub.subscribe("/messages/private/<%= params[:subdomain] %>/<%= cookies[:userid]%>", function(data) {
+	//	alert("got some thing");
+		$('<p></p>').addClass('private').html(data.username + ": " + data.msg).appendTo('#chat_room');
+		checkCookie("livechat", data.username + ":"  + data.msg ,10);
+		var height = $('#chat_room')[0].scrollHeight;
+		$('#chat_room').scrollTop(height);
+	});
+
+	var open = false;
+	$('#footerSlideButton').click(function() {
+	if(open === false) {
+//var pathname = window.location.protocol + "//" +window.location.host  + window.location.pathname;
+//	var subDomainName = getSubDomain(pathname);
+//	alert(pathname + " -- " +subDomainName);
+//checkCookieChatID($('#chat_room').attr('chat_id'));
+	$('#footerSlideContent').animate({ height: '300px' });
+	$(this).css('backgroundPosition', 'bottom left');
+	open = true;
+//alert("Sending");
+	} else {
+	$('#footerSlideContent').animate({ height: '0px' });
+	$(this).css('backgroundPosition', 'top left');
+	open = false;	
+	}
+});
+
+	$('#chatmessage').keypress(function(e){
+	if(e.keyCode == 13){
+		$.post('new_message',{ "message": $('#chatmessage').val(),"from": "<%= cookies[:userid] %>", "to" : "admin" },	function(result) {},"json");
+		$('<p></p>').html("Me: " + $('#chatmessage').val()).appendTo('#chat_room');
+		checkCookie("livechat",  "Me:"  + $('#chatmessage').val() ,10);
+		$('#chatmessage').val("");
+		var height = $('#chat_room')[0].scrollHeight;
+		$('#chat_room').scrollTop(height);
+	}
+	});
+	var oldChat = getCookie("livechat");
+	if(oldChat != null && oldChat != ""){
+		//alert("Some cookie" + oldChat);
+		var chatlines = oldChat.split("`");
+		for(var i=1;i< chatlines.length;i++){
+			 $('<p></p>').html(chatlines[i]).appendTo('#chat_room');
+		}	
+		var height = $('#chat_room')[0].scrollHeight;
+		$('#chat_room').scrollTop(height);
+	}else{
+		//alert("No Cookie");
+	}
+	
+});
+</script>
+	</head>
+	<body>
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand" href="#">Live Chat</a>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="content">
+				<div class="wrapper">
+					<div class="proper-content">
+						<div class="row">
+							<div class="span12">
+								<%= yield%>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="footer-wrapper">
+					<footer></footer>
+				</div>
+			</div>
+		</div>
+		<div id="footerSlideContainer">
+			<div id="footerSlideButton"></div>
+			<div id="footerSlideContent">
+				<div id="footerSlideText">
+					<div class="chat_container">
+						<div id="chat_room">
+							<p>
+								Hello User!! Welcome to live chat
+							</p>
+						</div>
+						<input type="text" id="chatmessage" name="message">
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

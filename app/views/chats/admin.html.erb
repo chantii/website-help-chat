@@ -1,0 +1,128 @@
+<%= subscribe_to "/messages/private/#{params[:subdomain]}/broadcast" %>
+<%= subscribe_to "/messages/private/#{params[:subdomain]}/admin" %>
+<script>
+	$(function() {
+// Subscribe to receive messages!
+
+$("#footerSlideContainer").hide();
+PrivatePub.subscribe("/messages/private/<%= params[:subdomain] %>/broadcast", function(data) {
+	//$('<p></p>').html(data.username + ": " + data.msg).appendTo('#admin_chat_room');
+	//var height = $('#admin_chat_room')[0].scrollHeight;
+	//$('#admin_chat_room').scrollTop(height);
+});
+
+PrivatePub.subscribe("/messages/private/<%= params[:subdomain] %>/admin", function(data) {
+//	alert("fot message");
+	if(data.username == $(".nowchat").attr("id")){
+		$('<p></p>').addClass('private').html(data.username + ": " + data.msg).appendTo('#admin_chat_room');
+	}
+	var height = $('#admin_chat_room')[0].scrollHeight;
+	$('#admin_chat_room').scrollTop(height);
+	
+	if ($("#"+data.username).length == 0){
+		$(".liveuserstbl tbody").append("<tr class='chat-notification' id=" + data.username + "><td>"+ data.username + "</td></tr>");
+	}else{		
+		$("#"+data.username).addClass("chat-notification");	
+	}
+	var temp = $("#"+data.username).get();
+        $("#"+data.username).remove();
+        $(".liveuserstbl tbody").prepend(temp);
+});
+
+$('#adminchatmessage').keypress(function(e){
+if(e.keyCode == 13){
+$.post('new_message',{"message": $('#adminchatmessage').val() , "from": "<%= cookies[:userid] %>", 
+	"to": $(".nowchat").attr("id") },
+	function(result) {},"json");
+	$('<p></p>').html("Admin: " + $('#adminchatmessage').val()).appendTo('#admin_chat_room');
+	$('#adminchatmessage').val("");
+	var height = $('#admin_chat_room')[0].scrollHeight;
+	$('#admin_chat_room').scrollTop(height);
+	}
+	});
+	
+
+  $("#bmessage_1").keypress(function(e){
+	if(e.keyCode == 13){
+		//alert("broadcast");
+		$.post('new_message',{"message": $('#bmessage_1').val() , "from": "admin",
+        "to": "broadcast" },
+        function(result) {},"json");
+        $('<p></p>').html("Admin: " + $('#bmessage_1').val()).appendTo('#bchat_room_1');
+        $('#bmessage_1').val("");
+        var height = $('#bchat_room_1')[0].scrollHeight;
+        $('#bchat_room_1').scrollTop(height);
+      } 	
+ }); 
+
+
+$('body').on('click', '.liveuserstbl  tr', function() {
+		$(".liveuserstblbody  tr").removeClass("nowchat");
+		$(this).addClass("nowchat");
+		$(this).removeClass("chat-notification");
+		$("#admin_chat_room").html("You chat with "+ $(this).attr("id") + " appears here");
+		$.getJSON('oldchat.json',{"userid": $(this).attr("id") },function(result) {
+			$.each(result, function(key, val) {
+                              if(val['fromorto'] == "from"){
+   				  $('<p></p>').addClass('private').html(val['userid'] + ": " + val['message'] ).appendTo('#admin_chat_room');
+                             } else{
+			     	  $('<p></p>').addClass('private').html("Admin" + ": " + val['message'] ).appendTo('#admin_chat_room');
+                             }	
+                                 
+  			});	
+		}, "json");		
+         var height = $('#admin_chat_room')[0].scrollHeight;
+        $('#admin_chat_room').scrollTop(height);
+	});	
+	});
+</script>
+<!--
+<div class="chat_container">
+	<div id="admin_chat_room">
+		<p class="alert">
+			Welcome to the chat room <%= cookies[:userid] %>!
+		</p>
+		<p>
+			<%= cookies[:userid] %>
+		</p>
+		<input type="text" id="adminchatmessage" name="message">
+	</div>
+</div>
+-->
+
+<div class="row">
+        <div class="row">
+		<div class="span4"><b>Live Chat Users</b></div>
+                <div class="span4"><b>Current Chat </b></div>
+                <div class="span4"><b>Broadcast </b></div>
+        </div>
+	<div class="row">
+		<div class="liveusers span4">
+			<table class="table table-hover liveuserstbl">
+				<tbody class="liveuserstblbody">
+					<% @chats.each do |chat| %>
+  						<tr id="<%= chat.userid%>" >
+    							<td><%= chat.userid %></td>
+  						</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+		<div class="curr_chat span4">
+			<div class="" id="admin_chat_room">
+				Your Chat Appears Here...
+			</div>
+			<div>
+				<textarea class="span4 curr-chat-textarea" id="adminchatmessage" name="message"></textarea>
+			</div>
+		</div>
+		<div class="admin_broadcast span4">
+			<div class="span4" id="bchat_room_1">
+				<% @bchats.each do |bchat| %>
+                                      <p><td>Admin : <%= bchat.message %></td></p>
+                                <% end %>
+			</div>
+		  	<div><textarea class="span4 chat-textarea" id="bmessage_1" name="message"></textarea></div>
+		</div>
+	</div>
+</div>

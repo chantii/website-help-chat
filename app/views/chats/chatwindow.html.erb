@@ -1,0 +1,56 @@
+<h1 class="chat-heading"></h1>
+<script>
+
+$(function() {
+
+	$(".navbar").hide();
+	$(".footer-wrapper").hide();
+		$("#footerSlideContainer").hide();
+    var client = new Faye.Client('http://50.112.243.144:9292/faye');
+    var pathname = window.location.pathname;
+	var chatId = pathname.split("/")[3];
+	var adminId = pathname.split("/")[2];
+	var selfCheck = "";
+	
+	$(".chat-heading").html(chatId);
+	var private_subscription = client.subscribe('/messages/private/' + chatId + '162738495', function(data) {				
+			$('<p></p>').addClass('private').html(data.chat_id + ": " + data.msg).appendTo('#chat_room_1');
+			var height = $('#chat_room_1')[0].scrollHeight;
+			$('#chat_room_1').scrollTop(height);
+    });
+	
+	var private_subscription2 = client.subscribe('/messages/private/' + chatId , function(data) {
+			//alert(adminId + "--" + data.admin);
+			if(adminId != data.admin){
+				 $('<p></p>').addClass('private').html("Admin - " + data.admin + ": " + data.msg).appendTo('#chat_room_1');
+                        	var height = $('#chat_room_1')[0].scrollHeight;
+                        	$('#chat_room_1').scrollTop(height);
+			}
+    });	
+	
+    $('#message_1').keypress(function(e){
+	selfCheck = $('#message_1').val();
+	if(e.keyCode == 13){
+		var publishTo = "/messages/private/" + chatId;
+        client.publish(publishTo,{
+          username: 'admin', 
+	  admin: adminId,
+          msg: $('#message_1').val()
+        });
+		$('<p></p>').html("admin" + ": " + $('#message_1').val()).appendTo('#chat_room_1');	
+		$('#message_1').val("");
+		var height = $('#chat_room_1')[0].scrollHeight;
+		$('#chat_room_1').scrollTop(height);
+		$.post('/logchat',{"chat_id": chatId, "message":selfCheck ,"from": 'admin'}, function(result) {
+		},"json");
+	}
+    });
+    });
+</script>
+<div class="row span12 ">
+	<div class="admin_chat row span12">
+		  <div class="row span12" id="chat_room_1">
+		  </div>
+		  <div><textarea class="row span12 chat-teaxtarea" id="message_1" name="message"></textarea></div>
+	</div>
+</div>

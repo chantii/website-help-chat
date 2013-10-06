@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  fromuser: MyString
+  touser: MyString
+  message: MyText
+
+two:
+  fromuser: MyString
+  touser: MyString
+  message: MyText

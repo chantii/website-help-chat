@@ -1,0 +1,77 @@
+@import "bootstrap";
+body { padding-top: 60px; }
+html, body, .container, .content {
+    height: 95%;
+}
+
+.container, .content {
+    position: relative;
+}
+
+.span12{
+  margin-left : 0px;
+}
+
+.proper-content {
+    padding-top: 0px; /* >= navbar height */
+}
+
+.admin_broadcast{
+  width : 50%;
+  max-height : 300px;
+  height :  300px;
+  border : 2px black solid;
+}
+
+.admin_chat{
+  width : 48%;
+  margin-left : 0px;
+  margin-top : 10px;
+  max-height : 300px;
+  height : 300px;
+  border : 2px black solid;
+}
+
+#admin_chat_room{
+  min-height : 240px;
+  max-height : 240px;
+  overflow-x : hidden;  
+  border : 2px black solid;
+}
+
+.liveusers{
+  border : 2px black solid;
+  max-height : 310px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.liveuserstbl:hover{
+  cursor : pointer;
+}
+
+.nowchat{
+  background-color: #ccc;
+}
+
+.wrapper {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -50px; /* same as the footer */
+}
+
+.footer-wrapper {
+    position: absolute;
+    height: 50px;
+  bottom: -10px;
+  right: 20px;
+}
+
+.chat-notification{
+  background-color: pink; 
+}
+
+.nowchat{
+  background-color: red; 
+}
+@import "bootstrap-responsive";

@@ -1,0 +1,4 @@
+<%= subscribe_to "/messages/private/#{params[:subdomain]}/broadcast" %>
+<%= subscribe_to "/messages/private/#{params[:subdomain]}/#{cookies[:userid]}" %>
+
+<p><%= cookies[:userid] %></p>

@@ -1,0 +1,83 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ *= require_tree .
+ */
+
+.content {
+  padding: 20px;
+}
+
+#footerSlideContainer {
+	position: fixed;
+	bottom:0;
+	width: 20%;
+	margin-left: 80%;
+}
+#footerSlideButton {
+	background: url(sliderButton.png) top left no-repeat transparent;
+	position: absolute;
+	top: -55px;
+	right: 20px;
+	width:50px;
+	height:50px;
+	border: none;
+	cursor: pointer;
+}
+#footerSlideContent {
+	width: 100%;
+	height: 0px;
+	background: #251b15;
+	color: #CCCCCC;
+	font-size: 0.8em;
+	border: none;
+	font-family: DejaVuSansBook, Sans-Serif;
+}
+#footerSlideText {
+	padding: 15px 10px 25px 25px;
+}
+
+#chatmessage{
+position : fixed;
+margin-bottom : 0px;
+}
+
+#chat_room{
+min-height : 240px;
+max-height : 240px;
+overflow-x : hidden;
+}
+
+#message_1{
+margin-bottom : 0px;
+}
+
+#chat_room_1{
+min-height : 240px;
+											max-height : 240px;
+	overflow-x : hidden;
+}
+
+#bmessage_1{
+	margin-bottom : 0px;
+}
+
+#bchat_room_1{
+	min-height : 240px;
+	max-height : 240px;
+	overflow-x : hidden;
+}
+
+.chat-textarea{
+	margin: 0px;
+	width: 95%;
+	height: 45px;
+}
